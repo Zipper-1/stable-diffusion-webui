@@ -31,6 +31,7 @@ echo venv %PYTHON%
 goto :launch
 
 :skip_venv
+echo novenv
 
 :launch
 %PYTHON% launch.py

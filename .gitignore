@@ -27,3 +27,7 @@ __pycache__
 notification.mp3
 /SwinIR
 /textual_inversion
+*.pt
+m/full-final-pruned.yaml
+m/full-latest.yaml
+webui-user.bat
