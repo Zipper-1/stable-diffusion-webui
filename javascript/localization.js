@@ -10,10 +10,8 @@ ignore_ids_for_localization={
     modelmerger_tertiary_model_name: 'OPTION',
     train_embedding: 'OPTION',
     train_hypernetwork: 'OPTION',
-    txt2img_style_index: 'OPTION',
-    txt2img_style2_index: 'OPTION',
-    img2img_style_index: 'OPTION',
-    img2img_style2_index: 'OPTION',
+    txt2img_styles: 'OPTION',
+    img2img_styles: 'OPTION',
     setting_random_artist_categories: 'SPAN',
     setting_face_restoration_model: 'SPAN',
     setting_realesrgan_enabled_models: 'SPAN',
@@ -108,6 +106,9 @@ function processNode(node){
 
 function dumpTranslations(){
     dumped = {}
+    if (localization.rtl) {
+        dumped.rtl = true
+    }
 
     Object.keys(original_lines).forEach(function(text){
         if(dumped[text] !== undefined)  return
@@ -129,6 +130,24 @@ onUiUpdate(function(m){
 
 document.addEventListener("DOMContentLoaded", function() {
     processNode(gradioApp())
+
+    if (localization.rtl) {  // if the language is from right to left,
+        (new MutationObserver((mutations, observer) => { // wait for the style to load
+            mutations.forEach(mutation => {
+                mutation.addedNodes.forEach(node => {
+                    if (node.tagName === 'STYLE') {
+                        observer.disconnect();
+
+                        for (const x of node.sheet.rules) {  // find all rtl media rules
+                            if (Array.from(x.media || []).includes('rtl')) {
+                                x.media.appendMedium('all');  // enable them
+                            }
+                        }
+                    }
+                })
+            });
+        })).observe(gradioApp(), { childList: true });
+    }
 })
 
 function download_localization() {
